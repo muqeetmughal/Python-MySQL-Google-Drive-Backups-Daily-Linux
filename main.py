@@ -11,7 +11,8 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaFileUpload
 from googleapiclient.discovery import build
-
+import os
+BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 #-----------------------------------------------------------------------
 """
 Will backup all the databases listed, will put files in same DIR as script'
@@ -54,17 +55,17 @@ def google_drive_backup_init():
 
     creds = None
 
-    if os.path.exists("token.json"):
-        creds = Credentials.from_authorized_user_file("token.json", SCOPES)
+    if os.path.exists(os.path.join(BASE_DIR, "token.json")):
+        creds = Credentials.from_authorized_user_file(os.path.join(BASE_DIR, "token.json"), SCOPES)
 
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
+            flow = InstalledAppFlow.from_client_secrets_file(os.path.join(BASE_DIR, "credentials.json"), SCOPES)
             creds = flow.run_local_server(port=0)
 
-        with open('token.json',"w") as token:
+        with open(os.path.join(BASE_DIR, "token.json"),"w") as token:
             token.write(creds.to_json())
 
 
@@ -93,10 +94,10 @@ def google_drive_backup_init():
                 "name" : file,
                 "parents" : [folder_id]
             }
-            media = MediaFileUpload(f"{foldername}/{file}")
+            media = MediaFileUpload(os.path.join(BASE_DIR, foldername,file))
             upload_file = service.files().create(body=file_metadata, media_body=media, fields="id").execute()
 
-            print("backed up file : ", file)
+            print("backed up file : ", upload_file)
 
     except HttpError as e:
         print("Error: ", str(e))
@@ -105,5 +106,6 @@ def google_drive_backup_init():
 
 
 if __name__=="__main__":
+    print(BASE_DIR)
     get_dump('hesk')
     google_drive_backup_init()
