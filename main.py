@@ -94,10 +94,10 @@ def google_drive_backup_init():
                 "name" : file,
                 "parents" : [folder_id]
             }
-            media = MediaFileUpload(os.path.join(BASE_DIR, foldername,file))
+            media = MediaFileUpload(f"{foldername}/{file}")
             upload_file = service.files().create(body=file_metadata, media_body=media, fields="id").execute()
 
-            print("backed up file : ", upload_file)
+            print("backed up file : ", file)
 
     except HttpError as e:
         print("Error: ", str(e))
@@ -106,6 +106,6 @@ def google_drive_backup_init():
 
 
 if __name__=="__main__":
+    # get_dump('hesk')
+    # google_drive_backup_init()
     print(BASE_DIR)
-    get_dump('hesk')
-    google_drive_backup_init()
