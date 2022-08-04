@@ -106,6 +106,6 @@ def google_drive_backup_init():
 
 
 if __name__=="__main__":
-    # get_dump('hesk')
-    # google_drive_backup_init()
     print(BASE_DIR)
+    get_dump('hesk')
+    google_drive_backup_init()
